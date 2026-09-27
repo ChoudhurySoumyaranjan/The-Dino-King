@@ -1,0 +1,68 @@
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: dino-king-mysql
+    restart: unless-stopped
+
+    environment:
+      MYSQL_ROOT_PASSWORD: 12345
+      MYSQL_DATABASE: dino_king
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-uroot",
+          "-p12345"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+
+  backend:
+    build:
+      context: ./dino-king-backend
+      dockerfile: Dockerfile
+
+    container_name: dino-king-backend
+    restart: unless-stopped
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dino_king?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 12345
+
+    ports:
+      - "5005:5005"
+
+
+  frontend:
+    build:
+      context: ./dino-king-frontend
+      dockerfile: Dockerfile
+
+    container_name: dino-king-frontend
+    restart: unless-stopped
+
+    depends_on:
+      - backend
+
+    ports:
+      - "5173:80"
+
+
+volumes:
+  mysql_data:

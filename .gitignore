@@ -1,0 +1,29 @@
+# Java / Maven
+**/target/
+**/.mvn/timing.properties
+
+# Node.js
+**/node_modules/
+**/dist/
+**/.vite/
+
+# Environment / Secrets
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
